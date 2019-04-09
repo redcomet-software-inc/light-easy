@@ -7,19 +7,55 @@
  */
 
 import React, {Component} from 'react';
-import {Dimensions, Platform, StyleSheet, Text, View, FlatList, TouchableHighlight} from 'react-native';
+import {Dimensions, Platform, StyleSheet, Text, View, FlatList, TouchableHighlight, Animated} from 'react-native';
 import { ColorPicker, toHsv, fromHsv } from 'react-native-color-picker';
 var width = Dimensions.get('window').width; //full width
 var height = Dimensions.get('window').height; //full h
 
 type Props = {};
 export class ScreenLight extends Component<Props> {
+
+    componentWillMount() {
+      this.animatedValue = new Animated.Value(0);
+    }
+
+    componentDidMount() {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(this.animatedValue, {
+            toValue: 800,
+            duration: 15500,
+            delay: 500
+          }),
+          Animated.timing(this.animatedValue, {
+            toValue: 0,
+            duration: 15500,
+            delay: 500,
+          })
+        ]),
+        {
+          iterations: -1
+        }
+      ).start();
+    }
+
    render() {
-     console.log("color: " + this.props.color)
-    return(
-      <View style={{backgroundColor: this.props.color, width: width, height: height}}>
-      </View>
-    );
+
+     const interpolateColor = this.animatedValue.interpolate({
+         inputRange: [0, 100, 200, 300, 400, 500, 600, 700, 800],
+         outputRange: ['rgb(255,0,0)', 'rgb(255,255,0)', 'rgb(0,255,0)', 'rgb(0,255,255)', 'rgb(0,70,255)', 'rgb(100,0,255)', 'rgb(0,70,255)', 'rgb(255,0,100)', 'rgb(255,0,0)'],
+       });
+
+     const animatedStyle = {
+       backgroundColor: interpolateColor,
+     }
+
+     const color = this.props.color;
+
+      return(
+        <Animated.View style={[{backgroundColor: color, width: width, height: height}, animatedStyle]}>
+        </Animated.View>
+      );
   }
 }
 
@@ -42,8 +78,11 @@ export default class App extends Component<Props> {
   handlePress () {
     console.log("pressed1");
   }
+
   render() {
-    const { color } = this.state;
+    let { color } = this.state;
+
+
     return (
       <View style={styles.container}>
 
@@ -61,7 +100,7 @@ export default class App extends Component<Props> {
           <View style={[styles.bodyPosition],[styles.ScreenLight]}>
             <ScreenLight color={color} />
           </View>
-          <View style={{width: width, height: height, position: 'absolute', zIndex:10}}>
+          <View style={[{width: width, height: height, position: 'absolute', zIndex:10}]}>
             <ColorPicker
               style={styles.ColorPicker}
               onColorSelected={color => alert(`Color selected: ${color}`)}
