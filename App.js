@@ -7,31 +7,49 @@
  */
 
 import React, {Component} from 'react';
-import {Dimensions, Platform, StyleSheet, Text, View, FlatList, TouchableHighlight, Animated} from 'react-native';
+import {Dimensions, Platform, StyleSheet, Text, View, FlatList, TouchableOpacity, Animated} from 'react-native';
 import { ColorPicker, toHsv, fromHsv } from 'react-native-color-picker';
 var width = Dimensions.get('window').width; //full width
 var height = Dimensions.get('window').height; //full h
 
+var anim1 = {
+  toValue: 800,
+  duration: 1550,
+  delay: 500
+};
+
+var anim2 = {
+  toValue: 0,
+  duration: 1550,
+  delay: 500,
+};
+
 type Props = {};
 export class ScreenLight extends Component<Props> {
+
+    constructor(props) {
+      super(props);
+      this.getValue = this.getValue.bind(this);
+      this.mainAnimation = this.mainAnimation.bind(this);
+      this.state = {
+        value: 0,
+        once: false,
+      }
+    }
 
     componentWillMount() {
       this.animatedValue = new Animated.Value(0);
     }
 
     componentDidMount() {
+      this.mainAnimation();
+    }
+
+    mainAnimation () {
       Animated.loop(
         Animated.sequence([
-          Animated.timing(this.animatedValue, {
-            toValue: 800,
-            duration: 15500,
-            delay: 500
-          }),
-          Animated.timing(this.animatedValue, {
-            toValue: 0,
-            duration: 15500,
-            delay: 500,
-          })
+          Animated.timing(this.animatedValue, anim1),
+          Animated.timing(this.animatedValue, anim2)
         ]),
         {
           iterations: -1
@@ -39,21 +57,37 @@ export class ScreenLight extends Component<Props> {
       ).start();
     }
 
-   render() {
+    getValue (value) {
+        console.log(value);
+        if(this.state.once === false) {
+          this.setState({once:true});
+          this.setState({value: value});
+        }
+    }
 
+   render() {
+     console.log(this.props.bColor);
      const interpolateColor = this.animatedValue.interpolate({
          inputRange: [0, 100, 200, 300, 400, 500, 600, 700, 800],
          outputRange: ['rgb(255,0,0)', 'rgb(255,255,0)', 'rgb(0,255,0)', 'rgb(0,255,255)', 'rgb(0,70,255)', 'rgb(100,0,255)', 'rgb(0,70,255)', 'rgb(255,0,100)', 'rgb(255,0,0)'],
        });
 
-     const animatedStyle = {
+     const interpolationStyle = {
        backgroundColor: interpolateColor,
+     }
+
+     if(this.props.bColor) {
+       console.log("ON");
+       this.mainAnimation();
+     } else {
+       console.log("OFF");
+       this.animatedValue.stopAnimation(value => this.getValue(value));
      }
 
      const color = this.props.color;
 
       return(
-        <Animated.View style={[{backgroundColor: color, width: width, height: height}, animatedStyle]}>
+        <Animated.View style={[{backgroundColor: color, width: width, height: height}, interpolationStyle]}>
         </Animated.View>
       );
   }
@@ -67,6 +101,9 @@ export default class App extends Component<Props> {
     this.handlePress = this.handlePress.bind(this);
     this.state = {
       color: 'none',
+      bColor: true,
+      once: false,
+
     }
   }
 
@@ -76,21 +113,22 @@ export default class App extends Component<Props> {
   }
 
   handlePress () {
-    console.log("pressed1");
+      this.setState({bColor: !this.state.bColor});
   }
 
   render() {
     let { color } = this.state;
-
+    const { bColor } = this.state;
 
     return (
       <View style={styles.container}>
 
         <View style={styles.header} >
           <View style={styles.buttonsContainer}>
-            <TouchableHighlight onPress={() => this.handlePress()} style={styles.button}>
+            <TouchableOpacity onPress={() => this.handlePress()} style={styles.button}>
               <Text>Meu botão 1</Text>
-            </TouchableHighlight>
+            </TouchableOpacity>
+            <Text>Status: { bColor ? "ON" : "OFF" }</Text>
           </View>
         </View>
         <View style={styles.body} >
@@ -98,7 +136,7 @@ export default class App extends Component<Props> {
             <Text>This is an example 1</Text>
           </View>
           <View style={[styles.bodyPosition],[styles.ScreenLight]}>
-            <ScreenLight color={color} />
+            <ScreenLight color={color} bColor={bColor} />
           </View>
           <View style={[{width: width, height: height, position: 'absolute', zIndex:10}]}>
             <ColorPicker
