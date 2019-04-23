@@ -7,7 +7,7 @@
  */
 
 import React, {Component} from 'react';
-import {Dimensions, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {Dimensions, StyleSheet, Text, Button, View, TouchableOpacity} from 'react-native';
 import { ColorPicker, fromHsv } from 'react-native-color-picker';
 import ScreenLight from './ScreenLight.js';
 
@@ -45,6 +45,7 @@ export default class Main extends Component<Props> {
 
     return (
       <View style={styles.container}>
+        <Button title="Teste" onPress={() => this.props.navigation.navigate('ScreenLight')} />
         <View style={styles.header} >
           <View style={styles.buttonsContainer}>
             <TouchableOpacity onPress={() => this.handlePress()} style={styles.button}>
@@ -56,9 +57,6 @@ export default class Main extends Component<Props> {
         <View style={styles.body} >
           <View style={[styles.bodyPosition],[{width: width, height: height}]}>
             <Text>This is an example 1</Text>
-          </View>
-          <View style={[styles.bodyPosition],[styles.ScreenLight]}>
-            <ScreenLight color={color} bColor={bColor} />
           </View>
           <View style={[{width: width, height: height, position: 'absolute', zIndex:10}]}>
             <ColorPicker

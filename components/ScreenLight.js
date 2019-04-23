@@ -70,6 +70,8 @@ export default class ScreenLight extends Component<Props> {
     }
 
    render() {
+
+    
      console.log(this.props.bColor);
      const interpolateColor = this.animatedValue.interpolate({
          inputRange: [0, 100, 200, 300, 400, 500, 600, 700, 800],
@@ -91,8 +93,60 @@ export default class ScreenLight extends Component<Props> {
      const color = this.props.color;
 
       return(
-        <Animated.View style={[{backgroundColor: color, width: width, height: height}, interpolationStyle]}>
-        </Animated.View>
+        <View style={[styles.bodyPosition],[styles.ScreenLight]}>
+          <Animated.View style={[{backgroundColor: color, width: width, height: height}, interpolationStyle]}>
+          </Animated.View>
+        </View>
       );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#c9c9c9',
+  },
+  header: {
+    flex:1,
+    width:'100%',
+    backgroundColor: 'green',
+    justifyContent: 'center',
+  },
+  headerEmptySpace: {
+    flex: 1,
+  },
+  buttonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  button: {
+    backgroundColor: 'yellow',
+    justifyContent: 'center',
+    padding: 25,
+    height: 10,
+  },
+  body: {
+    flex: 9,
+    width:'100%',
+    alignItems: 'center',
+  },
+  bodyPosition: {
+    position: 'absolute',
+
+  },
+  ColorPicker: {
+    width: '90%',
+    height: '90%',
+    position: 'absolute',
+    alignSelf: 'center',
+  },
+  ScreenLight: {
+    position: 'absolute',
+    width: width,
+    height: height,
+  }
+
+});

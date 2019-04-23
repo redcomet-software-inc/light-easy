@@ -18,12 +18,8 @@ var width = Dimensions.get('window').width; //full width
 var height = Dimensions.get('window').height; //full h
 
 const RootStack = createStackNavigator ({
-  Main: {
-    screen: Main
-  },
-  ScreenLight: {
-    screen: ScreenLight
-  }
+  Main: Main,
+  ScreenLight: ScreenLight
 });
 
 const App = createAppContainer(RootStack);
